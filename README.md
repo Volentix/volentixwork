@@ -1,4 +1,4 @@
-# EOS WPS
+# Volentix WPS
 
 ## Workflows
 
@@ -19,7 +19,7 @@
 2. send 100 EOS
 3. `refund` action to return 100 EOS
 
-## EOS WPS scheduled MSIG
+## Volentix WPS scheduled MSIG
 
 ### Stage 1
 - Create `eosio.wps` account with 2MB worth of RAM
@@ -29,7 +29,7 @@
 
 ### Stage 3
 - Deploy EOS WPS smart contract
-  https://github.com/EOS-Nation/eos-wps
+  https://github.com/avral/volentixwork
 
 ### Stage 4
 - Initialize EOS WPS (start will be 00:00UTC the day `init` is executed)
