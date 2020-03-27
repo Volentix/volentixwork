@@ -1,0 +1,41 @@
+# Prerequisites
+*.d
+.vscode
+eosc-vault.json
+
+nodeos
+dist
+tmp
+node_modules
+package-lock.json
+stderr
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
