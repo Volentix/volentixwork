@@ -1,4 +1,4 @@
-#include <eosio.wps/eosio.wps.hpp>
+#include <volentixwork/volentixwork.hpp>
 
 // utils
 #include "./utils/get_tx_id.cpp"

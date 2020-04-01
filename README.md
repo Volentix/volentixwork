@@ -5,7 +5,7 @@
 ### A. Submit & Deposit & Activate
 
 1. `submitdraft` to create a draft proposal
-2. send 100 EOS from `proposer` account
+2. send 100 VTX from `proposer` account
 3. `activate` proposal, deducts min deposit & can no longer be modified
 
 ### B. Submit & Cancel
@@ -16,23 +16,23 @@
 ### C. Deposit & Refund
 
 1. `submitdraft` draft proposal
-2. send 100 EOS
-3. `refund` action to return 100 EOS
+2. send 100 VTX
+3. `refund` action to return 100 VTX
 
 ## Volentix WPS scheduled MSIG
 
 ### Stage 1
-- Create `eosio.wps` account with 2MB worth of RAM
+- Create `VTXio.wps` account with 2MB worth of RAM
 
 ### Stage 2
-- Transfer `eosio.wps` account with `50,000 EOS` from `eosio.names` account
+- Transfer `VTXio.wps` account with `50,000 VTX` from `VTXio.names` account
 
 ### Stage 3
-- Deploy EOS WPS smart contract
+- Deploy VTX WPS smart contract
   https://github.com/avral/volentixwork
 
 ### Stage 4
-- Initialize EOS WPS (start will be 00:00UTC the day `init` is executed)
+- Initialize VTX WPS (start will be 00:00UTC the day `init` is executed)
 
 ## ACTION - USER
 
@@ -86,7 +86,7 @@ Submit a draft WPS proposal (create/modify)
 ### example
 
 ```bash
-cleos push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
+clVTX push action VTXio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 VTX", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
 ```
 
 ## ACTION `vote`
@@ -103,7 +103,7 @@ Vote for a WPS proposal
 - `{name} vote` - vote (yes/no/abstain)
 
 ```bash
-cleos push action eosio.wps vote '["myaccount", "mywps", "yes"]' -p myaccount
+clVTX push action VTXio.wps vote '["myaccount", "mywps", "yes"]' -p myaccount
 ```
 
 ## ACTION `activate`
@@ -120,7 +120,7 @@ Activate WPS proposal at a specified voting period
 - `{time_point_sec} start_voting_period` - activate proposal at the specified voting period (must be current or next)
 
 ```bash
-cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
+clVTX push action VTXio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
 ```
 
 ## ACTION `claim`
@@ -134,7 +134,7 @@ Claim remaining proposal amount, transfer amount to proposer
 - `{name} proposal_name` - proposal name to claim
 
 ```bash
-cleos push action eosio.wps claim '["mywps"]' -p myaccount
+clVTX push action VTXio.wps claim '["mywps"]' -p myaccount
 ```
 
 ## ACTION `refund`
@@ -148,7 +148,7 @@ Refund any remaining deposit amount from requesting account
 - `{name} account` - account requesting refund
 
 ```bash
-cleos push action eosio.wps refund '["myaccount"]' -p myaccount
+clVTX push action VTXio.wps refund '["myaccount"]' -p myaccount
 ```
 
 ## ACTION `canceldraft`
@@ -163,7 +163,7 @@ Cancel draft WPS proposal
 - `{name} proposal_name` - proposal name
 
 ```bash
-cleos push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
+clVTX push action VTXio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
 ```
 
 ## ACTION `modifydraft`
@@ -183,7 +183,7 @@ Modify draft WPS proposal
 ### example
 
 ```bash
-cleos push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"region", value":"global"}]]' -p myaccount
+clVTX push action VTXio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"region", value":"global"}]]' -p myaccount
 ```
 
 ## ACTION `modifybudget`
@@ -203,7 +203,7 @@ Modify draft WPS proposal budget
 ### example
 
 ```bash
-cleos push action eosio.wps modifybudget '["myaccount", "mywps", "500.0000 EOS", 2]' -p myaccount
+clVTX push action VTXio.wps modifybudget '["myaccount", "mywps", "500.0000 VTX", 2]' -p myaccount
 ```
 
 ## ACTION `setproposer`
@@ -221,7 +221,7 @@ Set proposer's metadata
 ### example
 
 ```bash
-cleos push action eosio.wps setproposer '["myaccount", [{"key":"region", value":"global"}]]' -p myaccount
+clVTX push action VTXio.wps setproposer '["myaccount", [{"key":"region", value":"global"}]]' -p myaccount
 ```
 
 ## ACTION `init`
@@ -233,10 +233,10 @@ Initialize WPS contract
 
 ### params
 
-- `{wps_parameters} params` - EOSIO WPS parameters
+- `{wps_parameters} params` - VTXIO WPS parameters
 
 ```bash
-cleos push action eosio.wps init '[{"vote_margin": 20, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 432000 }]' -p eosio.wps
+clVTX push action VTXio.wps init '[{"vote_margin": 20, "deposit_required": "100.0000 VTX", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 VTX", "min_time_voting_end": 432000 }]' -p VTXio.wps
 ```
 
 ## ACTION `complete`
@@ -250,7 +250,7 @@ Complete WPS voting period
 N/A
 
 ```bash
-cleos push action eosio.wps complete '[]' -p eosio.wps
+clVTX push action VTXio.wps complete '[]' -p VTXio.wps
 ```
 
 ## ACTION `setparams`
@@ -262,29 +262,29 @@ Set paramaters for WPS contract
 
 ### params
 
-- `{wps_parameters} params` - EOSIO WPS parameters
+- `{wps_parameters} params` - VTXIO WPS parameters
 
 ```bash
-cleos push action eosio.wps setparams '[{"vote_margin": 20, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 432000 }]' -p eosio.wps
+clVTX push action VTXio.wps setparams '[{"vote_margin": 20, "deposit_required": "100.0000 VTX", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 VTX", "min_time_voting_end": 432000 }]' -p VTXio.wps
 ```
 
 ## ACTION `refresh`
 
 Update `votes` from eligible voters
-Any existing votes with voters with less than 100 EOS vpay will be removed
+Any existing votes with voters with less than 100 VTX vpay will be removed
 
 - **authority**: `any`
 
 ```bash
-cleos push action eosio.wps refresh '[]' -p myaccount
+clVTX push action VTXio.wps refresh '[]' -p myaccount
 ```
 
 ## TABLE `settings`
 
 - `{int16_t} [vote_margin=20]` - minimum BP vote margin threshold to reach for proposals
-- `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
+- `{asset} [deposit_required="100.0000 VTX"]` - deposit required to active proposal
 - `{uint64_t} [voting_interval=2592000]` - voting interval in seconds
-- `{asset} [max_monthly_budget="25000.0000 EOS"]` - maximum monthly budget
+- `{asset} [max_monthly_budget="25000.0000 VTX"]` - maximum monthly budget
 - `{uint64_t} [min_time_voting_end=432000]` - minimum time required to activate at the end of the currentoting period
 
 ### example
@@ -292,9 +292,9 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 ```json
 {
   "vote_margin": 20,
-  "deposit_required": "100.0000 EOS",
+  "deposit_required": "100.0000 VTX",
   "voting_interval": 2592000,
-  "max_monthly_budget": "25000.0000 EOS",
+  "max_monthly_budget": "25000.0000 VTX",
   "min_time_voting_end": 432000
 }
 ```
@@ -318,9 +318,9 @@ cleos push action eosio.wps refresh '[]' -p myaccount
   "proposer": "myaccount",
   "proposal_name": "mywps",
   "title": "My WPS",
-  "monthly_budget": "500.0000 EOS",
+  "monthly_budget": "500.0000 VTX",
   "duration": 2,
-  "total_budget": "1000.0000 EOS",
+  "total_budget": "1000.0000 VTX",
   "proposal_json": [
     { "key": "category", "value": "other" },
     { "key": "region", "value": "global" }
@@ -369,9 +369,9 @@ cleos push action eosio.wps refresh '[]' -p myaccount
   "proposer": "myaccount",
   "proposal_name": "mywps",
   "title": "My WPS",
-  "monthly_budget": "500.0000 EOS",
+  "monthly_budget": "500.0000 VTX",
   "duration": 2,
-  "total_budget": "1000.0000 EOS",
+  "total_budget": "1000.0000 VTX",
   "proposal_json": [
     { "key": "category", "value": "other" },
     { "key": "region", "value": "global" }
@@ -379,8 +379,8 @@ cleos push action eosio.wps refresh '[]' -p myaccount
   "status": "active",
   "total_net_votes": 2,
   "eligible": false,
-  "payouts": "0.0000 EOS",
-  "claimed": "0.0000 EOS",
+  "payouts": "0.0000 VTX",
+  "claimed": "0.0000 VTX",
   "created": "2019-11-05T12:10:00",
   "start_voting_period": "2019-11-01T00:00:00",
   "end": "2019-12-01T00:00:00"
@@ -411,9 +411,9 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 
 - `{time_point_sec} current_voting_period` - current voting period
 - `{time_point_sec} next_voting_period` - next voting period
-- `{asset} [liquid_deposits="0.0000 EOS"]` - liquid deposits
-- `{asset} [locked_deposits="0.0000 EOS"]` - locked deposits
-- `{asset} [available_funding="0.0000 EOS"]` - available funding
+- `{asset} [liquid_deposits="0.0000 VTX"]` - liquid deposits
+- `{asset} [locked_deposits="0.0000 VTX"]` - locked deposits
+- `{asset} [available_funding="0.0000 VTX"]` - available funding
 
 ### example
 
@@ -421,9 +421,9 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 {
   "current_voting_period": "2019-12-12T00:00:00",
   "next_voting_period": "2020-01-11T00:00:00",
-  "liquid_deposits": "100.0000 EOS",
-  "locked_deposits": "200.0000 EOS",
-  "available_funding": "50000.0000 EOS",
+  "liquid_deposits": "100.0000 VTX",
+  "locked_deposits": "200.0000 VTX",
+  "available_funding": "50000.0000 VTX",
 }
 ```
 
@@ -437,7 +437,7 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 ```json
 {
   "account": "myaccount",
-  "balance": "100.0000 EOS"
+  "balance": "100.0000 VTX"
 }
 ```
 
@@ -471,7 +471,7 @@ cleos push action eosio.wps refresh '[]' -p myaccount
   "id": 0,
   "proposer": "myaccount",
   "proposal_name": "mywps",
-  "quantity": "100.0000 EOS",
+  "quantity": "100.0000 VTX",
   "timestamp": "2019-12-01T00:00:00",
   "tx_id": "<TRANSACTION ID>"
 }

@@ -6,12 +6,12 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 # eosio.wps
-echo -e "${GREEN}Compiling eosio.wps...${NC}"
+echo -e "${GREEN}Compiling volentixwork...${NC}"
 eosio-cpp -abigen \
-  ./src/eosio.wps.cpp \
-  -contract eosio.wps \
+  ./src/volentixwork.cpp \
+  -contract volentixwork \
   -R ./ricardian \
-  -o ./dist/eosio.wps.wasm \
+  -o ./dist/volentixwork.wasm \
   -I ./include \
   -I ./external/eosio.token/include \
   -I ./external/eosio.system/include
