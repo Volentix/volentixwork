@@ -17,15 +17,15 @@ using namespace std;
 static constexpr uint64_t DAY = 86400; // 24 hours
 static constexpr uint64_t WEEK = 604800; // 7 days
 static constexpr uint64_t MONTH = 2592000; // 30 days
-static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
+static constexpr symbol CORE_SYMBOL = symbol{"VTX", 8};
 
 /**
  * ## TABLE `settings`
  *
  * - `{int16_t} [vote_margin=20]` - minimum BP vote margin threshold to reach for proposals
- * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
+ * - `{asset} [deposit_required="100.0000 VTX"]` - deposit required to active proposal
  * - `{uint64_t} [voting_interval=2592000]` - voting interval in seconds
- * - `{asset} [max_monthly_budget="25000.0000 EOS"]` - maximum monthly budget
+ * - `{asset} [max_monthly_budget="25000.0000 VTX"]` - maximum monthly budget
  * - `{uint64_t} [min_time_voting_end=432000]` - minimum time required to activate at the end of the current voting period
  *
  * ### example
@@ -33,14 +33,14 @@ static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
  * ```json
  * {
  *   "vote_margin": 20,
- *   "deposit_required": "100.0000 EOS",
+ *   "deposit_required": "100.0000 VTX",
  *   "voting_interval": 2592000,
- *   "max_monthly_budget": "25000.0000 EOS",
+ *   "max_monthly_budget": "25000.0000 VTX",
  *   "min_time_voting_end": 432000
  * }
  * ```
  */
-struct [[eosio::table("settings"), eosio::contract("eosio.wps")]] wps_parameters {
+struct [[eosio::table("settings"), eosio::contract("volentixwork")]] wps_parameters {
     int16_t                 vote_margin = 20;
     asset                   deposit_required = asset{ 1000000, CORE_SYMBOL};
     uint64_t                voting_interval = MONTH;
@@ -70,9 +70,9 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
  *   "proposer": "myaccount",
  *   "proposal_name": "mywps",
  *   "title": "My WPS",
- *   "monthly_budget": "500.0000 EOS",
+ *   "monthly_budget": "500.0000 VTX",
  *   "duration": 2,
- *   "total_budget": "1000.0000 EOS",
+ *   "total_budget": "1000.0000 VTX",
  *   "proposal_json": [
  *     { "key": "category", "value": "other" },
  *     { "key": "region", "value": "global" }
@@ -80,7 +80,7 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
  * }
  * ```
  */
-struct [[eosio::table("drafts"), eosio::contract("eosio.wps")]] drafts_row {
+struct [[eosio::table("drafts"), eosio::contract("volentixwork")]] drafts_row {
     name                        proposer;
     name                        proposal_name;
     string                      title;
@@ -110,7 +110,7 @@ typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
  * }
  * ```
  */
-struct [[eosio::table("proposers"), eosio::contract("eosio.wps")]] proposers_row {
+struct [[eosio::table("proposers"), eosio::contract("volentixwork")]] proposers_row {
     name                    proposer;
     map<name, string>       metadata_json;
 
@@ -144,9 +144,9 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *   "proposer": "myaccount",
  *   "proposal_name": "mywps",
  *   "title": "My WPS",
- *   "monthly_budget": "500.0000 EOS",
+ *   "monthly_budget": "500.0000 VTX",
  *   "duration": 2,
- *   "total_budget": "1000.0000 EOS",
+ *   "total_budget": "1000.0000 VTX",
  *   "proposal_json": [
  *     { "key": "category", "value": "other" },
  *     { "key": "region", "value": "global" }
@@ -154,15 +154,15 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *   "status": "active",
  *   "total_net_votes": 2,
  *   "eligible": false,
- *   "payouts": "0.0000 EOS",
- *   "claimed": "0.0000 EOS",
+ *   "payouts": "0.0000 VTX",
+ *   "claimed": "0.0000 VTX",
  *   "created": "2019-11-05T12:10:00",
  *   "start_voting_period": "2019-11-01T00:00:00",
  *   "end": "2019-12-01T00:00:00"
  * }
  * ```
  */
-struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row : drafts_row {
+struct [[eosio::table("proposals"), eosio::contract("volentixwork")]] proposals_row : drafts_row {
     // inherent fields from `drafts` TABLE
     name                    status;
     int16_t                 total_net_votes;
@@ -204,7 +204,7 @@ typedef eosio::multi_index< "proposals"_n, proposals_row,
  * }
  * ```
  */
-struct [[eosio::table("votes"), eosio::contract("eosio.wps")]] votes_row {
+struct [[eosio::table("votes"), eosio::contract("volentixwork")]] votes_row {
     name                proposal_name;
     map<name, name>     votes;
 
@@ -218,9 +218,9 @@ typedef eosio::multi_index< "votes"_n, votes_row> votes_table;
  *
  * - `{time_point_sec} current_voting_period` - current voting period
  * - `{time_point_sec} next_voting_period` - next voting period
- * - `{asset} [liquid_deposits="0.0000 EOS"]` - liquid deposits
- * - `{asset} [locked_deposits="0.0000 EOS"]` - locked deposits
- * - `{asset} [available_funding="0.0000 EOS"]` - available funding
+ * - `{asset} [liquid_deposits="0.0000 VTX"]` - liquid deposits
+ * - `{asset} [locked_deposits="0.0000 VTX"]` - locked deposits
+ * - `{asset} [available_funding="0.0000 VTX"]` - available funding
  *
  * ### example
  *
@@ -228,13 +228,13 @@ typedef eosio::multi_index< "votes"_n, votes_row> votes_table;
  * {
  *   "current_voting_period": "2019-12-12T00:00:00",
  *   "next_voting_period": "2020-01-11T00:00:00",
- *   "liquid_deposits": "100.0000 EOS",
- *   "locked_deposits": "200.0000 EOS",
- *   "available_funding": "50000.0000 EOS",
+ *   "liquid_deposits": "100.0000 VTX",
+ *   "locked_deposits": "200.0000 VTX",
+ *   "available_funding": "50000.0000 VTX",
  * }
  * ```
  */
-struct [[eosio::table("state"), eosio::contract("eosio.wps")]] state_row {
+struct [[eosio::table("state"), eosio::contract("volentixwork")]] state_row {
     time_point_sec       current_voting_period;
     time_point_sec       next_voting_period;
     asset                liquid_deposits = asset{0, CORE_SYMBOL};
@@ -255,11 +255,11 @@ typedef eosio::singleton< "state"_n, state_row> state_table;
  * ```json
  * {
  *   "account": "myaccount",
- *   "balance": "100.0000 EOS"
+ *   "balance": "100.0000 VTX"
  * }
  * ```
  */
-struct [[eosio::table("deposits"), eosio::contract("eosio.wps")]] deposits_row {
+struct [[eosio::table("deposits"), eosio::contract("volentixwork")]] deposits_row {
     name         account;
     asset        balance;
 
@@ -283,7 +283,7 @@ typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
  * }
  * ```
  */
-struct [[eosio::table("periods"), eosio::contract("eosio.wps")]] periods_row {
+struct [[eosio::table("periods"), eosio::contract("volentixwork")]] periods_row {
     time_point_sec      voting_period;
     set<name>           proposals;
 
@@ -309,13 +309,13 @@ typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
  *   "id": 0,
  *   "proposer": "myaccount",
  *   "proposal_name": "mywps",
- *   "quantity": "100.0000 EOS",
+ *   "quantity": "100.0000 VTX",
  *   "timestamp": "2019-12-01T00:00:00",
  *   "tx_id": "<TRANSACTION ID>"
  * }
  * ```
  */
-struct [[eosio::table("claims"), eosio::contract("eosio.wps")]] claims_row {
+struct [[eosio::table("claims"), eosio::contract("volentixwork")]] claims_row {
     uint64_t         id;
     name             proposer;
     name             proposal_name;
@@ -335,7 +335,7 @@ typedef eosio::multi_index< "claims"_n, claims_row,
 
 namespace eosio {
 
-class [[eosio::contract("eosio.wps")]] wps : public contract {
+class [[eosio::contract("volentixwork")]] wps : public contract {
 
 private:
     // local instances of the multi indexes
@@ -390,7 +390,7 @@ public:
      * ### example
      *
      * ```bash
-     * cleos push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
+     * cleos push action volentixwork submitdraft '["myaccount", "mywps", "My WPS", "500.0000 VTX", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -416,7 +416,7 @@ public:
      * - `{name} vote` - vote (yes/no/abstain)
      *
      * ```bash
-     * cleos push action eosio.wps vote '["myaccount", "mywps", "yes"]' -p myaccount
+     * cleos push action volentixwork vote '["myaccount", "mywps", "yes"]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -437,7 +437,7 @@ public:
      * - `{time_point_sec} [start_voting_period=null]` - (optional) activate proposal at the specified voting period (must be current or next)
      *
      * ```bash
-     * cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
+     * cleos push action volentixwork activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -455,7 +455,7 @@ public:
      * - `{name} account` - account requesting refund
      *
      * ```bash
-     * cleos push action eosio.wps refund '["myaccount"]' -p myaccount
+     * cleos push action volentixwork refund '["myaccount"]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -474,7 +474,7 @@ public:
      * - `{name} proposal_name` - proposal name
      *
      * ```bash
-     * cleos push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
+     * cleos push action volentixwork canceldraft '["myaccount", "mywps"]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -498,7 +498,7 @@ public:
      * ### example
      *
      * ```bash
-     * cleos push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"region", "value":"global"}]]' -p myaccount
+     * cleos push action volentixwork modifydraft '["myaccount", "mywps", "My WPS", [{"key":"region", "value":"global"}]]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -522,7 +522,7 @@ public:
      * ### example
      *
      * ```bash
-     * cleos push action eosio.wps modifybudget '["myaccount", "mywps", "500.0000 EOS", 2]' -p myaccount
+     * cleos push action volentixwork modifybudget '["myaccount", "mywps", "500.0000 VTX", 2]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -544,7 +544,7 @@ public:
      * ### example
      *
      * ```bash
-     * cleos push action eosio.wps setproposer '["myaccount", [{"key":"region", value":"global"}]]' -p myaccount
+     * cleos push action volentixwork setproposer '["myaccount", [{"key":"region", value":"global"}]]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -560,10 +560,10 @@ public:
      *
      * ### params
      *
-     * - `{wps_parameters} params` - EOSIO WPS parameters
+     * - `{wps_parameters} params` - VTX WPS parameters
      *
      * ```bash
-     * cleos push action eosio.wps init '[{"vote_margin": 20, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 432000 }]' -p eosio.wps
+     * cleos push action volentixwork init '[{"vote_margin": 20, "deposit_required": "100.0000 VTX", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 VTX", "min_time_voting_end": 432000 }]' -p volentixwork
      * ```
      */
     [[eosio::action]]
@@ -579,10 +579,10 @@ public:
      *
      * ### params
      *
-     * - `{wps_parameters} params` - EOSIO WPS parameters
+     * - `{wps_parameters} params` - VTX WPS parameters
      *
      * ```bash
-     * cleos push action eosio.wps setparams '[{"vote_margin": 20, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 432000 }]' -p eosio.wps
+     * cleos push action volentixwork setparams '[{"vote_margin": 20, "deposit_required": "100.0000 VTX", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 VTX", "min_time_voting_end": 432000 }]' -p volentixwork
      * ```
      */
     [[eosio::action]]
@@ -600,7 +600,7 @@ public:
      * N/A
      *
      * ```bash
-     * cleos push action eosio.wps complete '[]' -p eosio.wps
+     * cleos push action volentixwork complete '[]' -p volentixwork
      * ```
      */
     [[eosio::action]]
@@ -618,7 +618,7 @@ public:
      * - `{name} proposal_name` - proposal name to claim
      *
      * ```bash
-     * cleos push action eosio.wps claim '["mywps"]' -p myaccount
+     * cleos push action volentixwork claim '["mywps"]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -628,12 +628,12 @@ public:
      * ## ACTION `refresh`
      *
      * Update `votes` from eligible voters
-     * Any existing votes with voters with less than 100 EOS vpay will be removed
+     * Any existing votes with voters with less than 100 VTX vpay will be removed
      *
      * - **authority**: `any`
      *
      * ```bash
-     * cleos push action eosio.wps refresh '[]' -p myaccount
+     * cleos push action volentixwork refresh '[]' -p myaccount
      * ```
      */
     [[eosio::action]]

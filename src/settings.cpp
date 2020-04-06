@@ -10,7 +10,7 @@ void wps::init( const wps_parameters params )
     auto settings = params;
     _settings.set( settings, ram_payer );
 
-    // set available EOS as `available_funding`
+    // set available VTX as `available_funding`
     auto state = _state.get_or_default();
     state.available_funding = token::get_balance( "eosio.token"_n, get_self(), CORE_SYMBOL.code() );
 

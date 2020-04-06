@@ -26,7 +26,7 @@ void wps::create_deposit_account( const eosio::name account, const eosio::name r
     if ( deposits_itr == _deposits.end()) {
         _deposits.emplace( ram_payer, [&]( auto& row ) {
             row.account = account;
-            row.balance = asset{0, symbol{ "EOS", 4 }};
+            row.balance = asset{0, symbol{ "VTX", 4 }};
         });
     }
 }

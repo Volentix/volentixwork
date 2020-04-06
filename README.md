@@ -22,10 +22,10 @@
 ## Volentix WPS scheduled MSIG
 
 ### Stage 1
-- Create `VTXio.wps` account with 2MB worth of RAM
+- Create `volentixwork` account with 2MB worth of RAM
 
 ### Stage 2
-- Transfer `VTXio.wps` account with `50,000 VTX` from `VTXio.names` account
+- Transfer `volentixwork` account with `50,000 VTX` from `volentixwork.names` account
 
 ### Stage 3
 - Deploy VTX WPS smart contract

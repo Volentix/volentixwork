@@ -1,10 +1,10 @@
 {
   "private": true,
-  "name": "eosio-wps",
+  "name": "volentixwork",
   "version": "0.1.0",
-  "description": "EOS WPS",
+  "description": "Volentix WPS",
   "main": "index.js",
-  "author": "Denis <denis@eosnation.io>",
+  "author": "Sylvain <sylvain@volentixlabs.com>",
   "license": "MIT",
   "dependencies": {
     "eosjs": "^20.0.0",

@@ -9,14 +9,14 @@ void wps::vote( const name voter, const name proposal_name, const name vote )
     // cannot vote during completed voting period phase
     check_voting_period_completed();
 
-    // voter must be an active producer with over 100 EOS in total votes
+    // voter must be an active producer with over 100 VTX in total votes
     check_voter_eligible( voter );
 
     // update `votes` table
     update_vote( voter, proposal_name, vote );
 
     // update `votes` from eligible voters
-    // any existing votes with voters with less than 100 EOS vpay will be removed
+    // any existing votes with voters with less than 100 VTX vpay will be removed
     refresh_proposal( proposal_name, get_eligible_producers() );
 
     // update `proposals::eligible` field for all active proposals
@@ -67,7 +67,7 @@ void wps::update_eligible_proposals()
     auto state = _state.get();
 
     // containers
-    eosio::asset total_payout = asset{ 0, symbol{ "EOS", 4 }};
+    eosio::asset total_payout = asset{ 0, symbol{ "VTX", 4 }};
 
     // filter out min voting threshold proposals
     std::map<int16_t, std::set<eosio::name>> proposals = sort_proposals_by_net_votes( "active"_n );

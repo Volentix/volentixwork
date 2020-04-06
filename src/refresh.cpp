@@ -2,7 +2,7 @@
 void wps::refresh( )
 {
     // update `votes` from eligible voters
-    // any existing votes with voters with less than 100 EOS vpay will be removed
+    // any existing votes with voters with less than 100 VTX vpay will be removed
     check( refresh_proposals(), "nothing was modified");
 
     // update `proposals::eligible` field for all active proposals

@@ -13,7 +13,7 @@ void wps::complete( )
     check_available_funding();
 
     // update `votes` from eligible voters
-    // any existing votes with voters with less than 100 EOS vpay will be removed
+    // any existing votes with voters with less than 100 VTX vpay will be removed
     refresh_proposals();
 
     // update `proposals::eligible` field for all active proposals
