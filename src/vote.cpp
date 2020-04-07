@@ -67,7 +67,8 @@ void wps::update_eligible_proposals()
     auto state = _state.get();
 
     // containers
-    eosio::asset total_payout = asset{ 0, symbol{ "VTX", 4 }};
+    eosio::asset total_payout = asset{ 0, CORE_SYMBOL};
+    
 
     // filter out min voting threshold proposals
     std::map<int16_t, std::set<eosio::name>> proposals = sort_proposals_by_net_votes( "active"_n );
