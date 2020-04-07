@@ -10,7 +10,7 @@ void wps::init( const wps_parameters params )
     auto settings = params;
     _settings.set( settings, ram_payer );
 
-    // set available VTX as `available_funding`
+    // // set available VTX as `available_funding`
     auto state = _state.get_or_default();
     state.available_funding = token::get_balance( "volentixgsys"_n, get_self(), CORE_SYMBOL.code() );
 
@@ -18,12 +18,12 @@ void wps::init( const wps_parameters params )
     const uint64_t now = current_time_point().sec_since_epoch();
     const time_point_sec current_voting_period = time_point_sec(now - now % DAY);
 
-    // define `state`
+    // // define `state`
     state.current_voting_period = current_voting_period;
     state.next_voting_period = state.current_voting_period + settings.voting_interval;
     _state.set( state, ram_payer );
 
-    // check if WPS account has enough funding to initialize the first voting period
+    // // check if WPS account has enough funding to initialize the first voting period
     check_available_funding();
 }
 
@@ -64,7 +64,7 @@ void wps::check_available_funding()
     auto state = _state.get();
     auto settings = _settings.get();
 
-    const asset balance = token::get_balance( "eosio.token"_n, get_self(), CORE_SYMBOL.code() );
+    const asset balance = token::get_balance( "volentixgsys"_n, get_self(), CORE_SYMBOL.code() );
     check( state.available_funding >= settings.max_monthly_budget, "[available_funding] must be equal or greater than [max_monthly_budget]");
     check( balance >= settings.max_monthly_budget, "[balance] must be equal or greater than [max_monthly_budget]");
 }

@@ -8,9 +8,9 @@ const rpc = new JsonRpc(endpoint, { fetch });
 // main
 (async () => {
   // variables
-  const code = "eosio.wps";
-  const scope = "eosio.wps";
-  const proposer = "toaccount";
+  const code = "volentixwork";
+  const scope = "volentixwork";
+  const proposer = "volentixtst2";
   const table = "proposals";
   const index_position = 3; // multi-index (2 = status, 3 = proposer)
   const key_type = "i64";
