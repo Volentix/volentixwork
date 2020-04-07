@@ -48,7 +48,7 @@ bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_p
 
 bool wps::is_voter_eligible( const name voter )
 {
-    // TODO Так тут пререстроить на их контракт
+    
     vdexdposvote::producers_table _producers( "vdexdposvote"_n, "vdexdposvote"_n.value );
 
     auto itr = _producers.find( voter.value );
@@ -64,9 +64,17 @@ set<name> wps::get_eligible_producers()
 
     set<name> eligible_producers;
 
+    // TOP 20 voters
+    int i = 20;
+
     for ( auto row : producer_by_votes ) {
+        i -= 1;
         if ( is_voter_eligible( row.owner )) eligible_producers.insert( row.owner );
         else break;
+
+        if (i == 0) {
+            break;
+        }
     }
     return eligible_producers;
 }

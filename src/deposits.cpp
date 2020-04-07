@@ -11,7 +11,7 @@ void wps::refund( const eosio::name account )
 
     // send liquid token
     const eosio::asset remaining_balance = deposits_itr->balance;
-    token::transfer_action transfer( "eosio.token"_n, { get_self(), "active"_n });
+    token::transfer_action transfer( "volentixgsys"_n, { get_self(), "active"_n });
     transfer.send( get_self(), account, remaining_balance, "refund" );
 
     // substract deposits
@@ -26,7 +26,7 @@ void wps::create_deposit_account( const eosio::name account, const eosio::name r
     if ( deposits_itr == _deposits.end()) {
         _deposits.emplace( ram_payer, [&]( auto& row ) {
             row.account = account;
-            row.balance = asset{0, symbol{ "VTX", 4 }};
+            row.balance = asset{0, CORE_SYMBOL};
         });
     }
 }

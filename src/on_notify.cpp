@@ -1,4 +1,4 @@
-[[eosio::on_notify("eosio.token::transfer")]]
+[[eosio::on_notify("volentixgsys::transfer")]]
 void wps::transfer( const eosio::name&    from,
                     const eosio::name&    to,
                     const eosio::asset&   quantity,
