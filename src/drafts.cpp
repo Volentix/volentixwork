@@ -10,7 +10,7 @@ void wps::submitdraft(const name proposer,
     const name ram_payer = proposer;
 
     // get scoped draft
-    drafts_table _drafts( get_self(), proposer.value );
+    //drafts_table _drafts( get_self(), proposer.value );
     auto drafts_itr = _drafts.find( proposal_name.value );
     auto proposals_itr = _proposals.find( proposal_name.value );
 
@@ -66,6 +66,7 @@ void wps::modifybudget(const name proposer,
                        const uint8_t duration )
 {
     require_auth( proposer );
+    
 
     auto proposals_itr = _proposals.find( proposal_name.value );
     check( proposals_itr == _proposals.end(), "[proposal_name] cannot `modifybudget` for an active proposal");
@@ -92,13 +93,15 @@ void wps::canceldraft( const name proposer, const name proposal_name )
     require_auth( proposer );
 
     // get scoped drafts
-    drafts_table _drafts( get_self(), proposer.value );
-    auto drafts_itr = _drafts.find( proposal_name.value );
+    //drafts_table _drafts( get_self(), proposer.value );
+    auto drafts_itr = _drafts.find( proposer.value );
+    
 
-    check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exist");
+    //check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exist");
 
     // add deposit
     _drafts.erase( drafts_itr );
+    
 }
 
 void wps::check_title( const string title )

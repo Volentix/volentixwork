@@ -148,7 +148,7 @@ Refund any remaining deposit amount from requesting account
 - `{name} account` - account requesting refund
 
 ```bash
-clVTX push action VTXio.wps refund '["myaccount"]' -p myaccount
+cleos push action volentixwork refund '["myaccount"]' -p myaccount
 ```
 
 ## ACTION `canceldraft`

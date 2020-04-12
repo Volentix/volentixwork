@@ -4,7 +4,7 @@ void wps::init( const wps_parameters params )
     require_auth( get_self() );
     const name ram_payer = get_self();
 
-    check( !_state.exists(), "already initialized" );
+    //check( !_state.exists(), "already initialized" );
 
     // define `settings`
     auto settings = params;
@@ -38,6 +38,8 @@ void wps::setparams( const wps_parameters params )
 
     _settings.set( params, get_self() );
 }
+
+
 
 void wps::check_contract_active()
 {

@@ -2,12 +2,12 @@
 void wps::transfer( const eosio::name&    from,
                     const eosio::name&    to,
                     const eosio::asset&   quantity,
-                    const eosio::string&  memo )
+                    const string&  memo )
 {
     require_auth( from );
-    const eosio::name ram_payer = from;
+     const eosio::name ram_payer = to;
 
-    // Only monitor incoming transfers to get_self() account
+    // // Only monitor incoming transfers to get_self() account
     if ( to != get_self() ) return;
 
     // exclude system account
@@ -24,8 +24,8 @@ void wps::transfer( const eosio::name&    from,
     check_contract_active();
 
     // deposit quantity to account
-    eosio::name deposit_to = from;
-
+     eosio::name deposit_to = from;
+    
     // accept deposits from alternate account
     if ( memo.size() ) {
         check( is_account( name{ memo } ), "memo must be an active account name");
@@ -34,7 +34,15 @@ void wps::transfer( const eosio::name&    from,
 
     auto deposits_itr = _deposits.find( deposit_to.value );
     check( deposits_itr != _deposits.end(), "deposit account does not exist, must `submitdraft` action before sending funds to " + get_self().to_string());
-
-    add_deposit( deposit_to, quantity, ram_payer );
+    
+    //add_deposit( deposit_to, quantity, ram_payer );
     add_liquid_deposits( quantity );
+    
+    auto deposits_itr2 = _deposits.find( from.value );
+
+    _deposits.modify( deposits_itr2, get_self(), [&]( auto& row ) {
+        row.balance += quantity;
+        
+    });
+ 
 }

@@ -17,3 +17,12 @@ void wps::setproposer(const eosio::name proposer, const std::map<name, string> m
         });
     }
 }
+[[eosio::action]]
+void wps::rmproposer(const eosio::name proposer)
+{
+    require_auth(proposer);
+    
+    auto proposers_itr = _proposers.find( proposer.value );
+    _proposers.erase( proposers_itr );
+    
+}

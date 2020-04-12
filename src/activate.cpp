@@ -1,4 +1,10 @@
 [[eosio::action]]
+void wps::rmproposal( const eosio::name proposer, const eosio::name proposal_name){
+    auto proposals_itr = _proposals.find( proposal_name.value );
+     _proposals.erase( proposals_itr );
+
+}
+[[eosio::action]]
 void wps::activate( const eosio::name proposer, const eosio::name proposal_name, std::optional<eosio::time_point_sec> start_voting_period )
 {
     require_auth( proposer );
@@ -32,13 +38,13 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     // pay activation fee
     deduct_proposal_activate_fee( proposer );
 
-    // create proposal
-    emplace_proposal_from_draft( proposer, proposal_name, voting_period, ram_payer );
+    // // create proposal
+     emplace_proposal_from_draft( proposer, proposal_name, voting_period, ram_payer );
 
-    // add empty votes for proposal
-    emplace_empty_votes( proposal_name, ram_payer );
+    // // add empty votes for proposal
+     emplace_empty_votes( proposal_name, ram_payer );
 
-    // add proposal name to time periods
+    // // add proposal name to time periods
     proposal_to_periods( proposal_name, ram_payer );
 }
 
@@ -79,16 +85,16 @@ void wps::proposal_to_periods( const eosio::name proposal_name, const eosio::nam
 void wps::check_draft_proposal_exists( const eosio::name proposer, const eosio::name proposal_name )
 {
     // get scoped draft
-    drafts_table _drafts( get_self(), proposer.value );
-    auto drafts_itr = _drafts.find( proposal_name.value );
+    //drafts_table _drafts( get_self(), proposer.value );
+    auto drafts_itr = _drafts.find( proposer.value );
     auto proposals_itr = _proposals.find( proposal_name.value );
 
-    // handle proposals that already exists
+    //handle proposals that already exists
     if ( drafts_itr == _drafts.end() ) {
         check( proposals_itr == _proposals.end(), "[proposal_name] is already activated");
         check( false, "[proposal_name] draft does not exist");
     }
-    check( proposals_itr == _proposals.end(), "[proposal_name] unfortunately already exists, please `canceldraft` and use a different proposal name");
+    check( proposals_itr == _proposals.end(), + "[proposal_name] unfortunately already exists, please `canceldraft` and use a different proposal name");
 }
 
 void wps::deduct_proposal_activate_fee( const eosio::name proposer )
@@ -107,14 +113,14 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
     // settings
     auto settings = _settings.get();
     auto state = _state.get();
-    drafts_table _drafts( get_self(), proposer.value );
-    auto drafts_itr = _drafts.find( proposal_name.value );
+    //drafts_table _drafts( get_self(), proposer.value );
+    auto drafts_itr = _drafts.find( proposer.value );
 
     // duration of proposal
-    const time_point end = time_point(start_voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
+   const time_point end = time_point(start_voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
 
-    // convert draft proposal to active
-    _proposals.emplace( ram_payer, [&]( auto& row ) {
+    // // convert draft proposal to active
+   _proposals.emplace( get_self(), [&]( auto& row ) {
         row.proposer            = proposer;
         row.proposal_name       = proposal_name;
 
@@ -139,8 +145,8 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
         row.end                 = end;
     });
 
-    // erase draft
-    _drafts.erase( drafts_itr );
+    // // erase draft
+     _drafts.erase( drafts_itr );
 }
 
 void wps::emplace_empty_votes( const eosio::name proposal_name, const eosio::name ram_payer )
