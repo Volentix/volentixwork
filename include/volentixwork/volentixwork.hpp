@@ -6,17 +6,13 @@
 #include <eosio/singleton.hpp>
 #include <eosio/system.hpp>
 
-
 #include <optional>
 
 #include <eosio.token/eosio.token.hpp>
-#include <volentixgsys.hpp>
 #include <../external/vdexdposvote/include/vdexdposvote/vdexdposvote.hpp>
 
 using namespace eosio;
 using namespace std;
-
-
 
 static constexpr uint64_t DAY = 86400; // 24 hours
 static constexpr uint64_t WEEK = 604800; // 7 days
@@ -34,9 +30,6 @@ class [[eosio::contract("volentixwork")]] wps : public contract {
 
 
 public:
-    
-
-
     using contract::contract;
 
     /**
@@ -55,8 +48,7 @@ public:
             _deposits( _self, _self.value ),
             _proposers( _self, _self.value ),
             _periods( _self, _self.value ),
-            _claims( _self, _self.value ),
-            _drafts( _self, _self.value )
+            _claims( _self, _self.value )
     {}
 
 
@@ -405,8 +397,42 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
      */
     [[eosio::action]]
     void refresh( );
+
     [[eosio::action]]
     void rmproposal( const eosio::name proposer, const eosio::name proposal_name);
+
+    [[eosio::action]]
+    void clean() {
+        require_auth( _self );
+
+        _state.remove();
+        _settings.remove();
+
+        auto it = _proposals.begin();
+        while (it != _proposals.end()) {
+            it = _proposals.erase(it);
+        }
+
+        while (_votes.begin() != _votes.end()) {
+            _votes.erase(_votes.begin());
+        }
+
+        while (_deposits.begin() != _deposits.end()) {
+            _deposits.erase(_deposits.begin());
+        }
+
+        while (_proposers.begin() != _proposers.end()) {
+            _proposers.erase(_proposers.begin());
+        }
+
+        while (_periods.begin() != _periods.end()) {
+            _periods.erase(_periods.begin());
+        }
+
+        while (_claims.begin() != _claims.end()) {
+            _claims.erase(_claims.begin());
+        }
+    }
 
     [[eosio::on_notify("volentixgsys::transfer")]]
     void transfer( const name&    from,
@@ -423,13 +449,14 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
     using init_action = eosio::action_wrapper<"init"_n, &wps::init>;
     using setparams_action = eosio::action_wrapper<"setparams"_n, &wps::setparams>;
     using setproposer_action = eosio::action_wrapper<"setproposer"_n, &wps::setproposer>;
-    using rmproposer_action = eosio::action_wrapper<"rmproposer"_n, &wps::rmproposer>;
-    using rmproposal_action = eosio::action_wrapper<"rmproposal"_n, &wps::rmproposal>;
-    using wipedeposits_action = eosio::action_wrapper<"wipedeposits"_n, &wps::wipedeposits>;
-    
     using complete_action = eosio::action_wrapper<"complete"_n, &wps::complete>;
     using claim_action = eosio::action_wrapper<"claim"_n, &wps::claim>;
     using refresh_action = eosio::action_wrapper<"refresh"_n, &wps::refresh>;
+
+    using clean_action = eosio::action_wrapper<"clean"_n, &wps::clean>;
+    using rmproposer_action = eosio::action_wrapper<"rmproposer"_n, &wps::rmproposer>;
+    using rmproposal_action = eosio::action_wrapper<"rmproposal"_n, &wps::rmproposal>;
+    using wipedeposits_action = eosio::action_wrapper<"wipedeposits"_n, &wps::wipedeposits>;
 
 private:
 
@@ -539,8 +566,7 @@ struct [[eosio::table("drafts"), eosio::contract("volentixwork")]] drafts_row {
     asset                       total_budget;
     map<name, string>           proposal_json;
 
-    //uint64_t primary_key() const { return proposal_name.value; }
-    uint64_t primary_key() const { return proposer.value; }
+    uint64_t primary_key() const { return proposal_name.value; }
 };
 typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
 
@@ -798,8 +824,6 @@ private:
     proposers_table             _proposers;
     periods_table               _periods;
     claims_table                _claims;
-    drafts_table               _drafts;
-
 };
 
 }

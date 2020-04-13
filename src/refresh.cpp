@@ -48,7 +48,6 @@ bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_p
 
 bool wps::is_voter_eligible( const name voter )
 {
-    
     vdexdposvote::producers_table _producers( "vdexdposvote"_n, "vdexdposvote"_n.value );
 
     auto itr = _producers.find( voter.value );
