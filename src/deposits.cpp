@@ -35,27 +35,17 @@ void wps::add_deposit( const eosio::name account, const eosio::asset quantity, c
 {
     auto deposits_itr = _deposits.find( account.value );
 
-    
+    // create deposit row
+    if (deposits_itr == _deposits.end()) {
+        _deposits.emplace( ram_payer, [&]( auto& row ) {
+            row.account = account;
+            row.balance = quantity;
+        });
+    } else {
         _deposits.modify( deposits_itr, same_payer, [&]( auto& row ) {
-            
             row.balance += quantity;
         });
-    
-    // auto deposits_itr = _deposits.find( account.value );
-
-    // create deposit row
-    // if (deposits_itr == _deposits.end()) {
-    //     _deposits.emplace( ram_payer, [&]( auto& row ) {
-    //         row.account = account;
-    //         row.balance = quantity;
-    //     });
-    // }
-    // else{ 
-    
-    //     _deposits.modify( deposits_itr, same_payer, [&]( auto& row ) {
-    //         row.balance += quantity;
-    //         });
-    //   }
+    }
 }
 
 void wps::wipedeposits( const eosio::name account)
@@ -89,6 +79,7 @@ void wps::add_liquid_deposits( const eosio::asset quantity )
 void wps::sub_liquid_deposits( const eosio::asset quantity )
 {
     const eosio::name ram_payer = get_self();
+
     auto state = _state.get_or_default();
     state.liquid_deposits -= quantity;
     _state.set( state, ram_payer );
@@ -97,6 +88,7 @@ void wps::sub_liquid_deposits( const eosio::asset quantity )
 void wps::move_to_locked_deposits( const eosio::asset quantity )
 {
     const eosio::name ram_payer = get_self();
+
     auto state = _state.get_or_default();
     state.liquid_deposits -= quantity;
     state.locked_deposits += quantity;
