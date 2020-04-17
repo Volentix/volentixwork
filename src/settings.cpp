@@ -4,7 +4,7 @@ void wps::init( const wps_parameters params )
     require_auth( get_self() );
     const name ram_payer = get_self();
 
-    //check( !_state.exists(), "already initialized" );
+    check( !_state.exists(), "already initialized" );
 
     // define `settings`
     auto settings = params;
@@ -23,7 +23,7 @@ void wps::init( const wps_parameters params )
     state.next_voting_period = state.current_voting_period + settings.voting_interval;
     _state.set( state, ram_payer );
 
-    // // check if WPS account has enough funding to initialize the first voting period
+    // check if WPS account has enough funding to initialize the first voting period
     check_available_funding();
 }
 

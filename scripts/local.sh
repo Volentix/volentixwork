@@ -4,7 +4,7 @@ cleos set account permission wpsvt active --add-code
 bash scripts/build.sh && cleos set contract wpsvt ./dist volentixwork.wasm volentixwork.abi
 
 # Transfer first month budget
-bash scripts/build.sh && cleos set contract wpsvt ./dist volentixwork.wasm volentixwork.abi
+cleos push action volentixgsys transfer '["bob", "wpsvt", "10.00000000 VTX", ""]' -p bob
 
 # Init contract
 cleos -v push action wpsvt init '[{"vote_margin": 2, "deposit_required": "1.00000000 VTX", "voting_interval": 86400, "max_monthly_budget": "10.00000000 VTX", "min_time_voting_end": 0 }]' -p wpsvt
