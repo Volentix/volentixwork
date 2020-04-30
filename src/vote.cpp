@@ -29,9 +29,11 @@ void wps::check_voter_eligible( const name voter )
 
     auto prod = _producers.get( voter.value, "[voter] must be registered as a producer" );
 
-    // TODO How to check is producer in top 20 ?
     check( prod.is_active, "[voter] must be an active producer");
     check( prod.total_votes > 0.0, "[voter] must have votes");
+
+    const set<name> eligible_producers = get_eligible_producers();
+    check(eligible_producers.find(voter) != eligible_producers.end(), "producer must be in top 20");
 }
 
 void wps::check_proposal_can_vote( const name proposal_name )
