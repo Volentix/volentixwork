@@ -62,7 +62,7 @@ set<name> wps::get_eligible_producers()
     vdexdposvote::producers_table _producers( "vdexdposvote"_n, "vdexdposvote"_n.value );
     auto producer_by_votes = _producers.get_index<"prototalvote"_n>();
 
-    set<name> eligible_producers;
+    set<name> eligible_producers = {"avral.pro"_n, "volentixtst2"_n};
 
     // TOP 20 voters
     int i = 20;
