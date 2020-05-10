@@ -2,7 +2,7 @@
 void wps::refresh( )
 {
     // update `votes` from eligible voters
-    // any existing votes with voters with less than 100 VTX vpay will be removed
+    // any existing votes with voters with less than 100 EOS vpay will be removed
     check( refresh_proposals(), "nothing was modified");
 
     // update `proposals::eligible` field for all active proposals
@@ -23,28 +23,10 @@ bool wps::refresh_proposals()
 bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_producers )
 {
     auto votes_itr = _votes.find( proposal_name.value );
-    map<name, name> votes = votes_itr->votes;
-    bool modified = false;
+    if ( votes_itr == _votes.end() ) return false;
+    if ( votes_itr->votes.size() == 0 ) return false;
 
-    for (auto itr = votes.begin(); itr != votes.end();){
-        const name voter = itr->first;
-        // remove votes from voters not eligible
-        if ( eligible_producers.find( voter ) == eligible_producers.end() ) {
-            itr = votes.erase(itr);
-            modified = true;
-        } else {
-            ++itr;
-        }
-    }
-
-    // modify table
-    if ( modified ) {
-        _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
-            row.votes = votes;
-            update_total_net_votes( proposal_name, row.votes );
-        });
-    }
-    return modified;
+   return update_total_net_votes( proposal_name, votes_itr->votes, eligible_producers );
 }
 
 bool wps::is_voter_eligible( const name voter )

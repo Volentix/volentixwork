@@ -18,9 +18,12 @@ static constexpr uint64_t DAY = 86400; // 24 hours
 static constexpr uint64_t WEEK = 604800; // 7 days
 static constexpr uint64_t MONTH = 2592000; // 30 days
 static constexpr symbol CORE_SYMBOL = symbol{"VTX", 8};
+static constexpr symbol BUDGET_SYMBOL = CORE_SYMBOL;
+static constexpr name BUDGET_TOKEN_CONTRACT = "volentixgsys"_n;
 
 
-
+// set TESTING true/false
+static constexpr bool TESTING = true;
 
 
 
@@ -75,9 +78,9 @@ public:
  */
 struct [[eosio::table("settings"), eosio::contract("volentixwork")]] wps_parameters {
     int16_t                 vote_margin = 20;
-    asset                   deposit_required = asset{ 1000000, CORE_SYMBOL};
+    asset                   deposit_required = asset{ 1000000, BUDGET_SYMBOL};
     uint64_t                voting_interval = MONTH;
-    asset                   max_monthly_budget = asset{ 250000000, CORE_SYMBOL};
+    asset                   max_monthly_budget = asset{ 250000000, BUDGET_SYMBOL};
     uint64_t                min_time_voting_end = DAY * 5;
 };
 
@@ -161,7 +164,7 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
      * ```
      */
     [[eosio::action]]
-    void activate( const name proposer, const name proposal_name, const optional<time_point_sec> start_voting_period );
+    void activate( const name proposer, const name proposal_name, const bool activate_next );
 
     /**
      * ## ACTION `refund`
@@ -289,7 +292,7 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
      * ```
      */
     [[eosio::action]]
-    void setproposer(const name proposer, const map<name, string> metadata_json );
+    void setproposer(const name proposer, const map<name, string> proposer_json );
 
     /**
      * ## ACTION `wipe deposits`
@@ -432,7 +435,12 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
         while (_claims.begin() != _claims.end()) {
             _claims.erase(_claims.begin());
         }
+
+        // TODO Comments ?
     }
+
+    [[eosio::action]]
+    void comment( const name account, const name proposal_name, const map<name, string> comment_json );
 
     [[eosio::on_notify("volentixgsys::transfer")]]
     void transfer( const name&    from,
@@ -452,6 +460,7 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
     using complete_action = eosio::action_wrapper<"complete"_n, &wps::complete>;
     using claim_action = eosio::action_wrapper<"claim"_n, &wps::claim>;
     using refresh_action = eosio::action_wrapper<"refresh"_n, &wps::refresh>;
+    using comment_action = eosio::action_wrapper<"comment"_n, &wps::comment>;
 
     using clean_action = eosio::action_wrapper<"clean"_n, &wps::clean>;
     using rmproposer_action = eosio::action_wrapper<"rmproposer"_n, &wps::rmproposer>;
@@ -463,23 +472,27 @@ private:
     // private helpers
     // ===============
 
+    // periods
+    void add_proposal_to_periods( const name proposal_name, const time_point_sec voting_period );
+    void copy_active_voting_periods( const time_point_sec current_voting_period, const time_point_sec next_voting_period );
+    void check_max_number_proposals();
+
     // activate
-    void proposal_to_periods( const name proposal_name, const name ram_payer );
-    void check_min_time_voting_end( const time_point_sec start_voting_period );
+    void check_min_time_voting_end( );
     void check_draft_proposal_exists( const name proposer, const name proposal_name );
     void deduct_proposal_activate_fee( const name proposer );
-    void emplace_proposal_from_draft( const name proposer, const name proposal_name, const time_point_sec start_voting_period, const name ram_payer );
-    void emplace_empty_votes( const name proposal_name, const name ram_payer );
-    void check_start_vote_period( const time_point_sec start_voting_period );
+    void emplace_proposal_from_draft( const name proposer, const name proposal_name, const bool activate_next );
+    void emplace_empty_votes( const name proposal_name );
+    void check_eligible_proposer( const name proposer );
 
     // vote
-    int16_t calculate_total_net_votes( const map<name, name> votes );
-    void update_total_net_votes( const name proposal_name, const std::map<name, name> votes );
-    void update_vote( const name voter, const name proposal_name, const name vote );
+    int16_t calculate_total_net_votes( const map<name, name> votes, const set<name> eligible_producers );
+    bool update_total_net_votes( const name proposal_name, const std::map<name, name> votes, const set<name> eligible_producers );
+    void update_vote( const name voter, const name proposal_name, const name vote, const set<name> eligible_producers );
     void update_eligible_proposals( );
     void check_proposal_can_vote( const name proposal_name );
-    map<int16_t, set<name>> sort_proposals_by_net_votes( const name status );
     void check_voter_eligible( const name voter );
+    map<int16_t, set<name>> sort_proposals_by_net_votes( const name status );
 
     // utils
     checksum256 get_tx_id();
@@ -500,8 +513,8 @@ private:
     // settings
     void add_funding( const asset quantity );
     void sub_funding( const asset quantity );
-    void check_contract_paused();
     void check_contract_active();
+    void check_wps_parameters( const wps_parameters params );
 
     // deposits
     void add_deposit( const name account, const asset quantity, const name ram_payer );
@@ -590,7 +603,7 @@ typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
  */
 struct [[eosio::table("proposers"), eosio::contract("volentixwork")]] proposers_row {
     name                    proposer;
-    map<name, string>       metadata_json;
+    map<name, string>       proposer_json;
 
     uint64_t primary_key() const { return proposer.value; }
 };
@@ -640,6 +653,24 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * }
  * ```
  */
+
+struct [[eosio::table("comments"), eosio::contract("volentixwork")]] comments_row {
+    name                    account;
+    name                    account_type;
+    time_point_sec          timestamp;
+    uint16_t                version;
+    map<name, string>       comment_json;
+
+    uint64_t primary_key() const { return account.value; }
+    uint64_t by_timestamp() const { return timestamp.sec_since_epoch(); }
+    uint64_t by_account_type() const { return account_type.value; }
+};
+typedef eosio::multi_index< "comments"_n, comments_row,
+    indexed_by<"bytimestamp"_n, const_mem_fun<comments_row, uint64_t, &comments_row::by_timestamp>>,
+    indexed_by<"byaccnttype"_n, const_mem_fun<comments_row, uint64_t, &comments_row::by_account_type>>
+> comments_table;
+
+
 struct [[eosio::table("proposals"), eosio::contract("volentixwork")]] proposals_row : drafts_row {
     // inherent fields from `drafts` TABLE
     name                    status;
@@ -649,7 +680,7 @@ struct [[eosio::table("proposals"), eosio::contract("volentixwork")]] proposals_
     asset                   claimed;
     time_point_sec          created;
     time_point_sec          start_voting_period;
-    time_point_sec          end;
+    int16_t                 remaining_voting_periods;
 
     uint64_t primary_key() const { return proposal_name.value; }
     uint64_t by_status() const { return status.value; }
@@ -715,9 +746,9 @@ typedef eosio::multi_index< "votes"_n, votes_row> votes_table;
 struct [[eosio::table("state"), eosio::contract("volentixwork")]] state_row {
     time_point_sec       current_voting_period;
     time_point_sec       next_voting_period;
-    asset                liquid_deposits = asset{0, CORE_SYMBOL};
-    asset                locked_deposits = asset{0, CORE_SYMBOL};
-    asset                available_funding = asset{0, CORE_SYMBOL};
+    asset                liquid_deposits = asset{0, BUDGET_SYMBOL};
+    asset                locked_deposits = asset{0, BUDGET_SYMBOL};
+    asset                available_funding = asset{0, BUDGET_SYMBOL};
 };
 
  typedef eosio::singleton< "state"_n, state_row> state_table;
@@ -810,9 +841,6 @@ typedef eosio::multi_index< "claims"_n, claims_row,
     indexed_by<"byproposer"_n, const_mem_fun<claims_row, uint64_t, &claims_row::by_proposer>>,
     indexed_by<"byproposal"_n, const_mem_fun<claims_row, uint64_t, &claims_row::by_proposal_name>>
 > claims_table;
-
-
-
 
 private:
     // local instances of the multi indexes

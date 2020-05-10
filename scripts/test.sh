@@ -3,12 +3,11 @@
 
 # init, fund & start
 cleos transfer eosio.names eosio.wps "25000.0000 VTX"
-cleos -v push action eosio.wps init '[{"vote_margin": 2, "deposit_required": "100.0000 VTX", "voting_interval": 86400, "max_monthly_budget": "25000.0000 VTX", "min_time_voting_end": 0 }]' -p eosio.wps
+cleos -v push action eosio.wps init '[{"vote_margin": 2, "deposit_required": "100.0000 EOS", "voting_interval": 5, "max_monthly_budget": "25000.0000 VTX", "min_time_voting_end": 0 }]' -p eosio.wps
 
 # setparams
 # 1 day   = 86400
 # 30 days = 2592000
-# cleos push action eosio.wps setparams '[{"vote_margin": 2, "deposit_required": "100.0000 VTX", "voting_interval": 86400, "max_monthly_budget": "25000.0000 VTX", "min_time_voting_end": 3600 }]' -p eosio.wps
 
 # set proposer
 cleos -v push action eosio.wps setproposer '["myaccount", [{"key":"region", "value":"global"}]]' -p myaccount
@@ -70,7 +69,6 @@ cleos -v push action eosio.wps vote '["mybp2", "novote", "no"]' -p mybp2
 cleos -v push action eosio.wps vote '["mybp3", "novote", "abstain"]' -p mybp3
 cleos -v push action eosio.wps vote '["mybp4", "novote", "no"]' -p mybp4
 
-# can't vote
 cleos -v push action eosio.wps vote '["mybp5", "mywps", "yes"]' -p mybp5
 
 # change bp vote & refresh
@@ -80,3 +78,11 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 # # complete
 # cleos push action eosio.wps complete '[]' -p eosio.wps
 
+# create/modify comment
+cleos push action eosio.wps comment '["myaccount", "mywps", [{ "key": "text", "value": "my comment" }]]' -p myaccount
+
+# illegible voter is allowed to comment if has previously voted for proposal
+cleos push action eosio.wps comment '["mybp4", "mywps", [{ "key": "text", "value": "my bp comment" }]]' -p mybp4
+
+# delete comment
+cleos push action eosio.wps comment '["myaccount", "mywps", []]' -p myaccount
