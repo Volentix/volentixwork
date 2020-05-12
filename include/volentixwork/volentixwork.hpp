@@ -10,6 +10,8 @@
 
 #include <eosio.token/eosio.token.hpp>
 #include <../external/vdexdposvote/include/vdexdposvote/vdexdposvote.hpp>
+#include <../external/vtxvtweights/vtxvtweights.cpp>
+
 
 using namespace eosio;
 using namespace std;
@@ -486,6 +488,7 @@ private:
     void check_eligible_proposer( const name proposer );
 
     // vote
+    bool is_min_vote_margin(const int16_t& total_net_votes, const asset& monthly_budget); // TODO More parameters here
     int16_t calculate_total_net_votes( const map<name, name> votes, const set<name> eligible_producers );
     bool update_total_net_votes( const name proposal_name, const std::map<name, name> votes, const set<name> eligible_producers );
     void update_vote( const name voter, const name proposal_name, const name vote, const set<name> eligible_producers );

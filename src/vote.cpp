@@ -1,3 +1,5 @@
+#include "../include/volentixwork/volentixwork.hpp"
+
 [[eosio::action]]
 void wps::vote( const name voter, const name proposal_name, const name vote )
 {
@@ -57,6 +59,24 @@ void wps::update_vote( const name voter, const name proposal_name, const name vo
     });
 }
 
+
+bool wps::is_min_vote_margin(const int16_t& total_net_votes, const asset& monthly_budget) {
+    auto settings = _settings.get();
+    vtxvtweights::weights_table w("vtxvtweights"_n, "vtxvtweights"_n.value);
+
+    auto weights = w.get();
+
+    for(std::map<asset, int>::iterator iter = weights.by_price.begin(); iter != weights.by_price.end(); ++iter) {
+        if ( monthly_budget <= iter->first && total_net_votes >= iter->second) {
+            return true;
+        }
+    }
+
+    // Maximum vote margin
+    return total_net_votes >= settings.vote_margin;
+}
+
+
 void wps::update_eligible_proposals()
 {
     // settings
@@ -80,12 +100,12 @@ void wps::update_eligible_proposals()
             const eosio::asset monthly_budget = proposal_itr->monthly_budget;
 
             // min requirements for payouts
-            const bool is_min_vote_margin = total_net_votes >= settings.vote_margin;
+            const bool vote_margin = is_min_vote_margin(total_net_votes, monthly_budget);
             const bool is_enough_budget = (total_payout + monthly_budget) <= settings.max_monthly_budget;
 
             // set eligible of proposal (true/false)
             _proposals.modify( proposal_itr, same_payer, [&]( auto& row ) {
-                if ( is_enough_budget && is_min_vote_margin ) {
+                if ( is_enough_budget && vote_margin ) {
                     total_payout += monthly_budget;
                     row.eligible = true;
                 } else {
