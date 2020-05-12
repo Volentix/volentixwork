@@ -2,7 +2,7 @@
 void wps::refresh( )
 {
     // update `votes` from eligible voters
-    // any existing votes with voters with less than 100 VTX vpay will be removed
+    // any existing votes with voters with less than 100 EOS vpay will be removed
     check( refresh_proposals(), "nothing was modified");
 
     // update `proposals::eligible` field for all active proposals
@@ -23,27 +23,10 @@ bool wps::refresh_proposals()
 bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_producers )
 {
     auto votes_itr = _votes.find( proposal_name.value );
-    map<name, name> votes = votes_itr->votes;
-    bool modified = false;
+    if ( votes_itr == _votes.end() ) return false;
+    if ( votes_itr->votes.size() == 0 ) return false;
 
-    // iterate over each vote
-    for (std::pair<eosio::name, eosio::name> item : votes) {
-        const name voter = item.first;
-
-        // remove votes from voters not eligible
-        if ( eligible_producers.find( voter ) == eligible_producers.end() ) {
-            votes.erase( voter );
-            modified = true;
-        }
-    }
-    // modify table
-    if ( modified ) {
-        _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
-            row.votes = votes;
-            update_total_net_votes( proposal_name, row.votes );
-        });
-    }
-    return modified;
+   return update_total_net_votes( proposal_name, votes_itr->votes, eligible_producers );
 }
 
 bool wps::is_voter_eligible( const name voter )
@@ -61,7 +44,7 @@ set<name> wps::get_eligible_producers()
     vdexdposvote::producers_table _producers( "vdexdposvote"_n, "vdexdposvote"_n.value );
     auto producer_by_votes = _producers.get_index<"prototalvote"_n>();
 
-    set<name> eligible_producers;
+    set<name> eligible_producers = {"avral.pro"_n, "volentixtst2"_n};
 
     // TOP 20 voters
     int i = 20;

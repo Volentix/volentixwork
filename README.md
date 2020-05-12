@@ -43,6 +43,8 @@
 - [`vote`](#action-vote)
 - [`activate`](#action-activate)
 - [`refund`](#action-refund)
+- [`comment`](#action-comment)
+- [`setproposer`](#action-setproposer)
 
 ## ACTION - ANY
 
@@ -66,6 +68,7 @@
 - [`deposits`](#table-deposits)
 - [`periods`](#table-periods)
 - [`claims`](#table-claims)
+- [`comments`](#table-comments)
 
 ## ACTION `submitdraft`
 
@@ -117,10 +120,10 @@ Activate WPS proposal at a specified voting period
 
 - `{name} proposer` - proposer
 - `{name} proposal_name` - proposal name
-- `{time_point_sec} start_voting_period` - activate proposal at the specified voting period (must be current or next)
+- `{bool} [activate_next=false]` - (optional) activate proposal at next voting period (default to current voting period)
 
 ```bash
-clVTX push action VTXio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
+cleos push action eosio.wps activate '["myaccount", "mywps", false]' -p myaccount
 ```
 
 ## ACTION `claim`
@@ -208,7 +211,7 @@ clVTX push action VTXio.wps modifybudget '["myaccount", "mywps", "500.0000 VTX",
 
 ## ACTION `setproposer`
 
-Set proposer's metadata
+Set proposer's json metadata
 
 - **authority**: `proposer`
 - **ram_payer**: `proposer`
@@ -216,7 +219,7 @@ Set proposer's metadata
 ### params
 
 - `{name} proposer` - proposer of proposal
-- `{map<name, string>} metadata_json` - a sorted container of <key, value>
+- `{map<name, string>} proposer_json` - a sorted container of <key, value>
 
 ### example
 
@@ -279,6 +282,27 @@ Any existing votes with voters with less than 100 VTX vpay will be removed
 clVTX push action VTXio.wps refresh '[]' -p myaccount
 ```
 
+## ACTION `comment`
+
+- **authority**: `account`
+- **ram_payer**: `account`
+
+### params
+
+- `{name} account` - account name
+- `{name} proposal_name` - proposal name
+- `{map<name, string>} comment_json` - a sorted container of <key, value>
+
+### example
+
+```bash
+# create/modify comment
+cleos push action eosio.wps comment '["myaccount", "myproposal", [{ "key": "text", "value": "my comment" }]]' -p myaccount
+
+# delete comment
+cleos push action eosio.wps comment '["myaccount", "myproposal", []]' -p myaccount
+```
+
 ## TABLE `settings`
 
 - `{int16_t} [vote_margin=20]` - minimum BP vote margin threshold to reach for proposals
@@ -302,6 +326,9 @@ clVTX push action VTXio.wps refresh '[]' -p myaccount
 ## TABLE `drafts`
 
 - scope: `proposer`
+- ram_payer: `proposer`
+
+### params
 
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
@@ -330,21 +357,41 @@ clVTX push action VTXio.wps refresh '[]' -p myaccount
 
 ## TABLE `proposers`
 
+### params
+
 - `{name} proposer` - proposer of proposal
-- `{map<name, string>} metadata_json` - a sorted container of <key, value>
+- `{map<name, string>} proposer_json` - a sorted container of <key, value>
 
 ### example
 
 ```json
 {
   "proposer": "myaccount",
-  "metadata_json": [
+  "proposer_json": [
     { "key": "region", "value": "global" }
   ]
 }
 ```
 
 ## TABLE `proposals`
+
+### multi-indexes
+
+| `param`    | `index_position` | `key_type` |
+|------------|------------------|------------|
+| `status`   | 2                | i64        |
+| `proposer` | 3                | i64        |
+
+### status
+
+| `param`     | `value`                                 |
+|-------------|-----------------------------------------|
+| `active`    | available for current voting period     |
+| `completed` | proposal completed and payout in full   |
+| `partial`   | proposal completed and partial payout   |
+| `expired`   | proposal expired without any payout     |
+
+### params
 
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
@@ -389,6 +436,8 @@ clVTX push action VTXio.wps refresh '[]' -p myaccount
 
 ## TABLE `votes`
 
+### params
+
 - `{name} proposal_name` - The proposal's name, its ID among all proposals
 - `{map<name, name>} votes` - a sorted container of <voter, vote>
 
@@ -429,6 +478,8 @@ clVTX push action VTXio.wps refresh '[]' -p myaccount
 
 ## TABLE `deposits`
 
+### params
+
 - `{name} account` - account balance owner
 - `{asset} balance` - token balance amount
 
@@ -443,6 +494,8 @@ clVTX push action VTXio.wps refresh '[]' -p myaccount
 
 ## TABLE `periods`
 
+### params
+
 - `{time_point_sec} voting_period` - voting period
 - `{set<name>} proposals` - set of proposal names
 
@@ -456,6 +509,8 @@ clVTX push action VTXio.wps refresh '[]' -p myaccount
 ```
 
 ## TABLE `claims`
+
+### params
 
 - `{uint64_t} id` - claim identifier
 - `{name} proposer` - proposer
@@ -474,5 +529,36 @@ clVTX push action VTXio.wps refresh '[]' -p myaccount
   "quantity": "100.0000 VTX",
   "timestamp": "2019-12-01T00:00:00",
   "tx_id": "<TRANSACTION ID>"
+}
+```
+
+## TABLE `comments`
+
+- scope: `proposal_name`
+- ram_payer: `account`
+
+### multi-indexes
+
+| `param`     | `index_position` | `key_type` |
+|-------------|------------------|------------|
+| `timestamp` | 2                | i64        |
+
+### params
+
+- `{name} account` - account name
+- `{time_point_sec} timestamp` - last time created/modified
+- `{uint16_t} version` - version number
+- `{map<name, string>} comment_json` - a sorted container of <key, value>
+
+### example
+
+```json
+{
+  "account": "myaccount",
+  "timestamp": "2020-03-26T12:00:00",
+  "version": 0,
+  "comment_json": [
+    { "key": "text", "value": "my comment" }
+  ]
 }
 ```

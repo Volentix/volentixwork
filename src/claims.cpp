@@ -4,17 +4,17 @@ void wps::claim( const eosio::name proposal_name )
     // no authorization required (can be executed by any account)
 
     // static actions
-    token::transfer_action transfer( "volentixgsys"_n, { get_self(), "active"_n });
+    token::transfer_action transfer( BUDGET_TOKEN_CONTRACT, { get_self(), "active"_n });
 
     auto proposals_itr = _proposals.find( proposal_name.value );
+    check( proposals_itr != _proposals.end(), "[proposal_name] does not exist" );
+
     const eosio::name proposer = proposals_itr->proposer;
     const eosio::asset payouts = proposals_itr->payouts;
     const eosio::asset claimed = proposals_itr->claimed;
 
     // calculate claimable amount
     const eosio::asset claimable = payouts + claimed;
-
-    check( proposals_itr != _proposals.end(), "[proposal_name] does not exist" );
     check( claimable.amount > 0, "no claimable amount" );
 
     transfer.send( get_self(), proposer, claimable, "wps::" + proposal_name.to_string() );

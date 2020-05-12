@@ -1,0 +1,59 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "pair_asset_int32",
+            "base": "",
+            "fields": [
+                {
+                    "name": "key",
+                    "type": "asset"
+                },
+                {
+                    "name": "value",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "setweights",
+            "base": "",
+            "fields": [
+                {
+                    "name": "by_price",
+                    "type": "pair_asset_int32[]"
+                }
+            ]
+        },
+        {
+            "name": "weights",
+            "base": "",
+            "fields": [
+                {
+                    "name": "by_price",
+                    "type": "pair_asset_int32[]"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "setweights",
+            "type": "setweights",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "weights",
+            "type": "weights",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}

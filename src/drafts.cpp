@@ -14,6 +14,9 @@ void wps::submitdraft(const name proposer,
     auto drafts_itr = _drafts.find( proposal_name.value );
     auto proposals_itr = _proposals.find( proposal_name.value );
 
+    // check if proposer is eligible to activate proposal
+    check_eligible_proposer( proposer );
+
     // validation
     check( proposals_itr == _proposals.end(), "[proposal_name] activated proposal already exists, try using a different proposal name" );
     check( drafts_itr == _drafts.end(), "[proposal_name] draft already exists, try using `modifydraft` or `canceldraft` or `modifybudget`" );
@@ -118,7 +121,7 @@ void wps::check_monthly_budget( const eosio::asset monthly_budget )
     check( _settings.exists(), "settings must first be initialized");
     auto settings = _settings.get_or_default();
 
-    check( monthly_budget.symbol == CORE_SYMBOL, "[monthly_budget] invalid CORE_SYMBOL" );
+    check( monthly_budget.symbol == BUDGET_SYMBOL, "[monthly_budget] invalid symbol" );
     check( monthly_budget >= settings.deposit_required, "[monthly_budget] must be a minimum of " + settings.deposit_required.to_string());
     check( monthly_budget <= settings.max_monthly_budget, "[monthly_budget] cannot be greater than [max_monthly_budget] of " + settings.max_monthly_budget.to_string());
 }
