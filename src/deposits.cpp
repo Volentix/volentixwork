@@ -50,9 +50,9 @@ void wps::add_deposit( const eosio::name account, const eosio::asset quantity, c
 
 void wps::wipedeposits( const eosio::name account)
 {
+   require_auth(_self);
     auto deposits_itr = _deposits.find( account.value );
     _deposits.erase( deposits_itr );
-
 }
 
 void wps::sub_deposit( const eosio::name account, const eosio::asset quantity )

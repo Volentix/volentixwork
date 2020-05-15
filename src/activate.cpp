@@ -1,10 +1,8 @@
 [[eosio::action]]
 void wps::rmproposal( const eosio::name proposer, const eosio::name proposal_name){
-    // FIXME check auth self
-    // remove votes and comments
-    auto proposals_itr = _proposals.find( proposal_name.value );
-     _proposals.erase( proposals_itr );
-
+   require_auth( _self );
+   auto proposals_itr = _proposals.find( proposal_name.value );
+    _proposals.erase( proposals_itr );
 }
 
 [[eosio::action]]
