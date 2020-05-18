@@ -2,9 +2,11 @@
 #include <eosio/asset.hpp>
 #include <eosio/symbol.hpp>
 #include <eosio/transaction.hpp>
+#include <eosio/singleton.hpp>
 #include <cmath>
 
 using namespace eosio;
+using namespace std;
 
 class [[eosio::contract("vdexdposvote")]] vdexdposvote : public contract {
 public:
@@ -28,12 +30,18 @@ public:
 
     vdexdposvote(name receiver, name code, datastream<const char *> ds) : contract(receiver, code, ds),
                                                                       _producers(receiver, receiver.value),
-                                                                      _voters(receiver, receiver.value) {}
+                                                                      _voters(receiver, receiver.value), 
+                                                                      _ppweights(receiver, receiver.value) {}
 
     [[eosio::action]]
     void regproducer(const name producer, const std::string &producer_name,
                      const std::string &url, const std::string &key, const std::string &node_id,
                      const std::vector<uint32_t> &job_ids);
+
+    [[eosio::action]]
+    void unregprodall();
+     [[eosio::action] ]
+    void deluserinfo();
 
     [[eosio::action]]
     void unregprod(const name producer);
@@ -119,6 +127,28 @@ public:
 
     producers_table _producers;
 
+
+    struct [[eosio::table("ppweights"), eosio::contract("vdexdposvote")]] ppweights {
+        map<asset, int> by_price = {};
+    };
+
+    typedef eosio::singleton< "ppweights"_n, ppweights> ppweights_table;
+
+    [[eosio::action]]
+    void setppweights(map<asset, int> by_price) {
+        require_auth(_self);
+
+        auto params = ppweights{
+            .by_price = by_price
+        };
+
+        _ppweights.set( params, _self );
+    };
+
+    using setppweights_action = eosio::action_wrapper<"setppweights"_n, &vdexdposvote::setppweights>;
+    ppweights_table              _ppweights;
+
+private:
     struct [[eosio::table]] voter_info {
         name owner;
         std::vector <name> producers;
@@ -139,8 +169,6 @@ public:
     };
 
     typedef eosio::multi_index<"accounts"_n, account> accounts;
-
-private:
 
     void update_voters(const name voter_name, const std::vector <name> &producers,
                        const double votes_per_prod, const double tokens, const uint64_t vouting_time);
