@@ -17,6 +17,7 @@ void wps::setproposer(const eosio::name proposer, const std::map<name, string> p
         });
     }
 }
+
 [[eosio::action]]
 void wps::rmproposer(const eosio::name proposer)
 {

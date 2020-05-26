@@ -1,10 +1,8 @@
 [[eosio::action]]
 void wps::rmproposal( const eosio::name proposer, const eosio::name proposal_name){
-    // FIXME check auth self
-    // remove votes and comments
-    auto proposals_itr = _proposals.find( proposal_name.value );
-     _proposals.erase( proposals_itr );
-
+   require_auth( _self );
+   auto proposals_itr = _proposals.find( proposal_name.value );
+    _proposals.erase( proposals_itr );
 }
 
 [[eosio::action]]
@@ -138,5 +136,7 @@ void wps::emplace_empty_votes( const name proposal_name )
 void wps::check_eligible_proposer( const name proposer )
 {
     vdexdposvote::producers_table _producers( "vdexdposvote"_n, "vdexdposvote"_n.value );
-    check( _producers.find( proposer.value ) == _producers.end(), "[proposer] cannot be a registered producer");
+    auto proposer_it = _producers.find( proposer.value );
+
+    check( proposer_it == _producers.end() || proposer_it->is_active == false, "[proposer] cannot be a registered producer");
 }

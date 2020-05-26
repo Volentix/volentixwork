@@ -62,7 +62,7 @@ void wps::update_vote( const name voter, const name proposal_name, const name vo
 
 bool wps::is_min_vote_margin(const int16_t& total_net_votes, const asset& monthly_budget) {
     auto settings = _settings.get();
-    vtxvtweights::weights_table w("vtxvtweights"_n, "vtxvtweights"_n.value);
+    vdexdposvote::ppweights_table w("vdexdposvote"_n, "vdexdposvote"_n.value);
 
     auto weights = w.get();
 

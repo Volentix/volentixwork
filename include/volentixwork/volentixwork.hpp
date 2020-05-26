@@ -10,7 +10,6 @@
 
 #include <eosio.token/eosio.token.hpp>
 #include <../external/vdexdposvote/include/vdexdposvote/vdexdposvote.hpp>
-#include <../external/vtxvtweights/vtxvtweights.cpp>
 
 
 using namespace eosio;
