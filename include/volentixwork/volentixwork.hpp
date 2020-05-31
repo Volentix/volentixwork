@@ -864,11 +864,12 @@ private:
     claims_table                _claims;
 };
 
+} // eosio namespace
+
 // Help functions
 template <typename T>
-bool is_in(const T& v, std::initializer_list<T> lst)
+bool is_in(const T& v, std::initializer_list<uint8_t> lst)
 {
     return std::find(std::begin(lst), std::end(lst), v) != std::end(lst);
 }
 
-}
