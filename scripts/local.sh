@@ -1,7 +1,7 @@
 # First deploy the weights contract
 
 
-cleos create account eosio wps EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio volentixwork EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
 cleos create account eosio vdexdposvote EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
 
 cleos set account permission wps active --add-code

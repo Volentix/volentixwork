@@ -1,4 +1,6 @@
 #pragma once
+#include <algorithm>
+#include <initializer_list>
 
 #include <eosio/eosio.hpp>
 #include <eosio/time.hpp>
@@ -121,6 +123,9 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
     void submitdraft( const name proposer,
                       const name proposal_name,
                       const string title,
+                      const uint8_t type,
+                      const uint8_t security,
+                      const uint8_t impact,
                       const asset monthly_budget,
                       const uint8_t duration,
                       const map<name, string> proposal_json );
@@ -577,6 +582,9 @@ struct [[eosio::table("drafts"), eosio::contract("volentixwork")]] drafts_row {
     name                        proposal_name;
     string                      title;
     asset                       monthly_budget;
+    uint8_t                     type;
+    uint8_t                     security;
+    uint8_t                     impact;
     uint8_t                     duration;
     asset                       total_budget;
     map<name, string>           proposal_json;
@@ -856,4 +864,12 @@ private:
     claims_table                _claims;
 };
 
+} // eosio namespace
+
+// Help functions
+template <typename T>
+bool is_in(const T& v, std::initializer_list<uint8_t> lst)
+{
+    return std::find(std::begin(lst), std::end(lst), v) != std::end(lst);
 }
+

@@ -96,6 +96,9 @@ void wps::emplace_proposal_from_draft( const name proposer, const name proposal_
 
         // inherit from draft
         row.title               = drafts_itr->title;
+        row.type                = drafts_itr->type;
+        row.security            = drafts_itr->security;
+        row.impact              = drafts_itr->impact;
         row.monthly_budget      = drafts_itr->monthly_budget;
         row.duration            = drafts_itr->duration;
         row.total_budget        = drafts_itr->total_budget;
