@@ -2,11 +2,18 @@
 void wps::submitdraft(const name proposer,
                       const name proposal_name,
                       const string title,
+                      const uint8_t type,
+                      const uint8_t security,
+                      const uint8_t impact,
                       const asset monthly_budget,
                       const uint8_t duration,
                       const map<name, string> proposal_json )
 {
     require_auth( proposer );
+    check(is_in(type, {1, 2, 3, 4}), "proposal type is invalid");
+    check(is_in(security, {1, 2, 3, 4}), "proposal security is invalid");
+    check(is_in(impact, {1, 2, 3}), "proposal impact is invalid");
+
     const name ram_payer = proposer;
 
     // get scoped draft
@@ -31,6 +38,9 @@ void wps::submitdraft(const name proposer,
         row.proposer        = proposer;
         row.proposal_name   = proposal_name;
         row.title           = title;
+        row.type            = type;
+        row.security        = security;
+        row.impact          = impact;
         row.monthly_budget  = monthly_budget;
         row.duration        = duration;
         row.total_budget    = asset{ monthly_budget.amount * duration, monthly_budget.symbol };
